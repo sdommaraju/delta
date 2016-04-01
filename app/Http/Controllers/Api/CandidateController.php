@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
+use Request;
 
+use App\Http\Requests;
 use App\Http\Controllers\Api\BaseController;
 use App\Http\Models\Candidate;
 use App\Http\Requests\CandidateRequest;
 use App\Http\Transformers\CandidateTransformer;
 use Dingo\Api\Auth\Auth;
 use LucaDegasperi\OAuth2Server\Authorizer;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use App\Http\Helpers\ResumeHelper as ResumeHelper;
 
 class CandidateController extends BaseController
 {
@@ -82,6 +86,43 @@ class CandidateController extends BaseController
     public function update(Request $request, $id)
     {
         //
+    }
+    
+    public function uploadResume(Request $request, $id)
+    {
+        
+        $candidate = Candidate::findorfail($id);
+       
+        $file = Request::file('resume');
+        $extension = $file->getClientOriginalExtension();
+        $original_file_name = $file->getClientOriginalName();
+        $file_content = File::get($file);
+        $store = Storage::disk('local')->put($file->getClientOriginalName(),  $file_content);
+        
+        $path = Storage::disk('local')->getDriver()->getAdapter()->getPathPrefix();
+        $stored_file = $path.$original_file_name;
+        
+        if($store){
+            $resume = new ResumeHelper($stored_file,$extension);
+            $content = $resume->parseResume();
+            $candidate->resume = $content;
+            $candidate->resume_file = $original_file_name;
+            $candidate->save();
+        }
+        return $this->response->item($candidate,new CandidateTransformer);
+        
+    }
+    public function uploadProfile(Request $request, $id)
+    {
+    
+        $data = Request::all();
+        $candidate = Candidate::findorfail($id);
+        
+        $candidate->resume = $data['profile'];
+        $candidate->save();
+        
+        return $this->response->item($candidate,new CandidateTransformer);
+    
     }
 
     /**

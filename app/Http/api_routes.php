@@ -16,23 +16,26 @@ $api->version('v1', function ($api) {
     $api->post('access_token', function() {
         return Response::json(Authorizer::issueAccessToken());
     });
+    
 });
 
 
-$api->version('v1',function ($api) {
+$api->version('v1',['prefix' => 'api','namespace' => 'App\Http\Controllers\Api'],function ($api) {
     
     $api->group(['middleware' => 'oauth-client'],function($api){
-        $api->get('users', 'App\http\Controllers\Api\UserController@index');
+        $api->get('users', 'UserController@index');
     });
     
    
     $api->group(['middleware' => 'oauth','oauth-user'],function($api){
         
-        $api->resource('users', 'App\http\Controllers\Api\UserController');
+        $api->resource('users', 'UserController');
        
-        $api->get('user/profile', 'App\http\Controllers\Api\UserController@profile');
+        $api->get('user/profile', 'UserController@profile');
         
-        $api->resource('candidate','App\http\Controllers\Api\CandidateController');
+        $api->resource('candidate','CandidateController');
+        $api->post('candidate/{id}/uploadResume','CandidateController@uploadResume');
+        $api->post('candidate/{id}/uploadProfile','CandidateController@uploadProfile');
 //         $api->resource('projects', 'App\http\Controllers\Api\ProjectsController');
 //         $api->get('users/{id}/projects', 'App\http\Controllers\Api\UserController@projects');
 //         $api->resource('gallery', 'App\http\Controllers\Api\UserGalleryController');

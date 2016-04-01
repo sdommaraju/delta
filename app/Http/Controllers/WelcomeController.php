@@ -33,34 +33,8 @@ class WelcomeController extends Controller {
 	 */
 	public function index()
 	{
-	    $filename='D:/Projects/CodeBase/delta/storage/app/1630654_745_1_JillHeaden.docx';
-	    $file = $this->read_docx($filename);
 	    
-	    //$filename='D:/Projects/CodeBase/delta/storage/app/IM_462.doc';
-	    //$file = $this->read_doc($filename);
-	   
-	    $delimiter = '#';
-	    $startTag = 'SKILLS:';
-	    $endTag = 'EDUCATION';
-	    $regex = $delimiter . preg_quote($startTag, $delimiter). '(.*?)'.preg_quote($endTag, $delimiter). $delimiter.'s';
-	    
-	    $exp = $regex;
-	    preg_match($exp,$file,$match);
-	    if(count($match)>0){
-	        $skills = explode("\n",$match[1]);
-	        foreach($skills as $skill){
-	            if(trim($skill)!=""){
-	                
-	                $text = 'ignore everything except this (text)';
-	                
-	                preg_match('/\(([^)]*)\)/', $skill, $skill_match);
-	                preg_match('/(?:\(|(?!^)\G)[^()]*?([+-]?\d+(?:,\d+)?)(?=[^()]*\))/', $skill, $skill_match_years);
-	                print_r($skill_match_years);exit;
-	                
-	            }
-	        }
-	    }
-	    //return view('welcome');
+	    return view('welcome');
 	}
 	
 	function read_docx($filename){
@@ -85,24 +59,63 @@ class WelcomeController extends Controller {
 	    }
 	    zip_close($zip);
 	    $content = str_replace('</w:r></w:p></w:tc><w:tc>', " ", $content);
-	    $content = str_replace('</w:r></w:p>', "\r\n", $content);
+	    $content = str_replace('</w:r></w:p>', "\n", $content);
+	    $content = str_replace('</w:rPr></w:pPr>', "\n", $content);
 	    $striped_content = strip_tags($content);
 	
 	    return $striped_content;
+	    
 	}
-	function read_doc($filename){
+    function read_doc($filename) {
+        $fileHandle = fopen($filename, "r");
+        $line = @fread($fileHandle, filesize($filename));   
+        $lines = explode(chr(0x0D),$line);
+        $outtext = "";
+        foreach($lines as $thisline)
+          {
+            $pos = strpos($thisline, chr(0x00));
+            if (($pos !== FALSE)||(strlen($thisline)==0))
+              {
+              } else {
+                $outtext .= $thisline." ";
+              }
+          }
+         $outtext = preg_replace("/[^a-zA-Z0-9\s\,\.\-\n\r\t@\/\_\(\)]/","",$outtext);
+        return $outtext;
+    }
+	function readWord($filename) {
+	    if(file_exists($filename))
+	    {
+	        if(($fh = fopen($filename, 'r')) !== false )
+	        {
+	            $headers = fread($fh, 0xA00);
 	
-	    $striped_content = '';
-	    $content = '';
+	            // 1 = (ord(n)*1) ; Document has from 0 to 255 characters
+	            $n1 = ( ord($headers[0x21C]) - 1 );
 	
-	    if(!$filename || !file_exists($filename)) return false;
+	            // 1 = ((ord(n)-8)*256) ; Document has from 256 to 63743 characters
+	            $n2 = ( ( ord($headers[0x21D]) - 8 ) * 256 );
 	
-	    $content = file_get_contents($filename);
-	    $content = str_replace('</w:r></w:p></w:tc><w:tc>', " ", $content);
-	    $content = str_replace('</w:r></w:p>', "\r\n", $content);
-	    //$striped_content = strip_tags($content);
+	            // 1 = ((ord(n)*256)*256) ; Document has from 63744 to 16775423 characters
+	            $n3 = ( ( ord($headers[0x21E]) * 256 ) * 256 );
 	
-	    return $this->br2nl(nl2br($content));
+	            // 1 = (((ord(n)*256)*256)*256) ; Document has from 16775424 to 4294965504 characters
+	            $n4 = ( ( ( ord($headers[0x21F]) * 256 ) * 256 ) * 256 );
+	
+	            // Total length of text in the document
+	            $textLength = ($n1 + $n2 + $n3 + $n4);
+	
+	            $extracted_plaintext = fread($fh, $textLength);
+	
+	            // if you want to see your paragraphs in a new line, do this
+	            //return nl2br($extracted_plaintext);
+	            return $extracted_plaintext;
+	        } else {
+	            return false;
+	        }
+	    } else {
+	        return false;
+	    }
 	}
 	function br2nl( $string )
 	{

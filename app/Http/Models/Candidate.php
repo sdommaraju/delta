@@ -8,7 +8,7 @@ class Candidate extends Model
 {
     protected $table = 'candidates';
     
-    protected $fillable = ['agency_id', 'first_name', 'last_name','address1','city','state','zip','phone_number','email','description'];
+    protected $fillable = ['agency_id', 'first_name', 'last_name','address1','city','state','zip','phone_number','email','description','resume'];
     
     
 }

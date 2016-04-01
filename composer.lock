@@ -123,12 +123,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dingo/api.git",
-                "reference": "b0491204a4f9c6ac305f344a0d30954175002364"
+                "reference": "5e1c0839067e82fdfa8472eb2e3f024a4c3b96ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dingo/api/zipball/b0491204a4f9c6ac305f344a0d30954175002364",
-                "reference": "b0491204a4f9c6ac305f344a0d30954175002364",
+                "url": "https://api.github.com/repos/dingo/api/zipball/5e1c0839067e82fdfa8472eb2e3f024a4c3b96ea",
+                "reference": "5e1c0839067e82fdfa8472eb2e3f024a4c3b96ea",
                 "shasum": ""
             },
             "require": {
@@ -191,24 +191,25 @@
                 "laravel",
                 "restful"
             ],
-            "time": "2016-03-23 05:01:03"
+            "time": "2016-03-31 11:03:29"
         },
         {
             "name": "dingo/blueprint",
-            "version": "v0.1.4",
+            "version": "v0.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dingo/blueprint.git",
-                "reference": "ad74a0257f906d54ee5d13f1e243d71fa2ffde0f"
+                "reference": "0b01c9dc9d7032c64232996cfc93cd4838e15928"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dingo/blueprint/zipball/ad74a0257f906d54ee5d13f1e243d71fa2ffde0f",
-                "reference": "ad74a0257f906d54ee5d13f1e243d71fa2ffde0f",
+                "url": "https://api.github.com/repos/dingo/blueprint/zipball/0b01c9dc9d7032c64232996cfc93cd4838e15928",
+                "reference": "0b01c9dc9d7032c64232996cfc93cd4838e15928",
                 "shasum": ""
             },
             "require": {
                 "doctrine/annotations": "1.2.*",
+                "illuminate/filesystem": "~5.1",
                 "illuminate/support": "~5.1",
                 "php": ">=5.5.9",
                 "phpdocumentor/reflection-docblock": "2.0.*"
@@ -246,7 +247,7 @@
                 "docs",
                 "laravel"
             ],
-            "time": "2015-11-30 06:11:02"
+            "time": "2016-03-31 11:16:28"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -3450,16 +3451,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v3.0.3",
+            "version": "v3.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "b5ba64cd67ecd6887f63868fa781ca094bd1377c"
+                "reference": "0047c8366744a16de7516622c5b7355336afae96"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/b5ba64cd67ecd6887f63868fa781ca094bd1377c",
-                "reference": "b5ba64cd67ecd6887f63868fa781ca094bd1377c",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/0047c8366744a16de7516622c5b7355336afae96",
+                "reference": "0047c8366744a16de7516622c5b7355336afae96",
                 "shasum": ""
             },
             "require": {
@@ -3495,7 +3496,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2016-02-23 15:16:06"
+            "time": "2016-03-04 07:55:57"
         }
     ],
     "aliases": [],
