@@ -33,9 +33,18 @@ $api->version('v1',['prefix' => 'api','namespace' => 'App\Http\Controllers\Api']
        
         $api->get('user/profile', 'UserController@profile');
         
+        $api->get('candidate/search','CandidateController@search');
+        
         $api->resource('candidate','CandidateController');
+        
+        $api->resource('agency','AgencyController');
+        
         $api->post('candidate/{id}/uploadResume','CandidateController@uploadResume');
         $api->post('candidate/{id}/uploadProfile','CandidateController@uploadProfile');
+        $api->post('candidate/{id}/skills','CandidateController@addSkill');
+        
+        //$api->delete('candidate/{id}/skills/{id}','CandidateController@deleteSkill');
+        
 //         $api->resource('projects', 'App\http\Controllers\Api\ProjectsController');
 //         $api->get('users/{id}/projects', 'App\http\Controllers\Api\UserController@projects');
 //         $api->resource('gallery', 'App\http\Controllers\Api\UserGalleryController');
