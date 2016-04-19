@@ -29,7 +29,7 @@ class AgencyRequest extends Request
                 {
                     return [
                         'name' => 'required',
-                        'logo_url' => 'required',
+                        //'logo_url' => 'required',
                         'address' => 'required',
                         'city' => 'required',
                         'state' => 'required',

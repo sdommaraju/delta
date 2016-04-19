@@ -21,7 +21,8 @@ class AgencyController extends BaseController
      * @apiVersion 1.0.0
      * @apiName Getagencies
      * @apiGroup Agencies
-     *
+     * @apiParam (AuthorizationHeader) {String} Accept Accept value. Allowed values: "application/vnd.delta.v1+json"
+     * @apiParam (AuthorizationHeader) {String} Authorization Token value (example "Bearer 4JosxlXfnoUyhGgBjAtyutO8FxIvRIADN0lp1TI2").
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
      *     {
@@ -75,7 +76,8 @@ class AgencyController extends BaseController
      * @apiVersion 1.0.0
      * @apiName CreateAgency
      * @apiGroup Agencies
-     * 
+     * @apiParam (AuthorizationHeader) {String} Accept Accept value. Allowed values: "application/vnd.delta.v1+json"
+     * @apiParam (AuthorizationHeader) {String} Authorization Token value (example "Bearer 4JosxlXfnoUyhGgBjAtyutO8FxIvRIADN0lp1TI2").
      * @apiParam {String} email Agency Admin Email.
      * @apiParam {String} password Agency Admin Password
      * 
@@ -112,9 +114,10 @@ class AgencyController extends BaseController
     public function store(AgencyUserRequest $request)
     {
         $userData = $request->input();
+       
         //Create USer with Email and Password
         $userData['password'] = bcrypt($userData['password']);
-        $userData['role_id'] = 1;
+        $userData['role_id'] = 2;
         
         $user = User::create($userData);
         
@@ -133,7 +136,8 @@ class AgencyController extends BaseController
      * @apiVersion 1.0.0
      * @apiName GetAgency
      * @apiGroup Agencies
-     *
+     * @apiParam (AuthorizationHeader) {String} Accept Accept value. Allowed values: "application/vnd.delta.v1+json"
+     * @apiParam (AuthorizationHeader) {String} Authorization Token value (example "Bearer 4JosxlXfnoUyhGgBjAtyutO8FxIvRIADN0lp1TI2").
      * @apiParam {Integer} id Agency Id.
      *
      * @apiSuccessExample Success-Response:
@@ -168,8 +172,8 @@ class AgencyController extends BaseController
      */
     public function show($id)
     {
-        $agency = Agency::findorfail($id);
-        return $this->response->item($agency,new AgencyTransformer);
+       $agency = Agency::findorfail($id);
+       return $this->response->item($agency,new AgencyTransformer);
     }
 
     /**
@@ -188,7 +192,8 @@ class AgencyController extends BaseController
      * @apiVersion 1.0.0
      * @apiName PutAgency
      * @apiGroup Agencies
-     *
+     * @apiParam (AuthorizationHeader) {String} Accept Accept value. Allowed values: "application/vnd.delta.v1+json"
+     * @apiParam (AuthorizationHeader) {String} Authorization Token value (example "Bearer 4JosxlXfnoUyhGgBjAtyutO8FxIvRIADN0lp1TI2").
      * @apiParam {Integer} id Agency Id.
      * @apiParam {String} name Agency Name.
      * @apiParam {String} logo_url Agency Logo URL.
@@ -234,7 +239,7 @@ class AgencyController extends BaseController
         
         $agencyData = $request->input();
         $agency->name = $agencyData['name'];
-        $agency->logo_url = $agencyData['logo_url'];
+        //$agency->logo_url = $agencyData['logo_url'];
         $agency->address = $agencyData['address'];
         $agency->city = $agencyData['city'];
         $agency->state = $agencyData['state'];
@@ -251,7 +256,8 @@ class AgencyController extends BaseController
      * @apiVersion 1.0.0
      * @apiName DeleteAgency
      * @apiGroup Agencies
-     *
+     * @apiParam (AuthorizationHeader) {String} Accept Accept value. Allowed values: "application/vnd.delta.v1+json"
+     * @apiParam (AuthorizationHeader) {String} Authorization Token value (example "Bearer 4JosxlXfnoUyhGgBjAtyutO8FxIvRIADN0lp1TI2").
      * @apiParam {Integer} id Agency Id.
      *
      * @apiSuccessExample Success-Response:

@@ -18,7 +18,7 @@ class AgencyTransformer extends TransformerAbstract {
             'phone_number' => $agency->phone_number,
             'zip' => $agency->zip,
             'created_at' => $agency->created_at,
-            'user_id' => $agency->user_id
+            'agencyAdmin' => $agency->userAdmin
         ];
     }
 }

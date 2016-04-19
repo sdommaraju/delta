@@ -21,8 +21,8 @@ class CandidateSkills extends Model
         $query = "SELECT candidate_id FROM candidate_skills cnd WHERE  ";
         $first = false;
         foreach($skills  as $param){
-            $key = key((array)$param);
-            $value = $param->$key;
+            $key = $param->skill;
+            $value = $param->experience;
             if($first){
                 $query.= " AND ";
             }
@@ -36,8 +36,10 @@ class CandidateSkills extends Model
         $resume_query = '';
         $first = false;
         foreach($skills  as $param){
-            $key = key((array)$param);
-            $value = $param->$key;
+            //$key = key((array)$param);
+            //$value = $param->$key;
+            $key = $param->skill;
+            $value = $param->experience;
             if($first){
                 $resume_query.= " AND ";
             }

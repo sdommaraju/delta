@@ -28,7 +28,8 @@ class AgencyUserRequest extends Request
             case 'POST' :
                 {
                     return [
-                        
+                        'first_name' => 'required',
+                        'last_name' => 'required',
                         'email' => 'required|email',
                         'password' => 'required'
                     ];

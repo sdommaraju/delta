@@ -10,5 +10,8 @@ class Agency extends Model
     
     protected $fillable = ['name', 'logo_url', 'address','city','state','zip','email'];
     
-    
+    public function userAdmin()
+    {
+        return $this->hasMany('App\Http\Models\User')->where('role_id','=','2');
+    }
 }
