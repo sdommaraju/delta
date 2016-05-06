@@ -21,6 +21,7 @@ class CandidateTransformer extends TransformerAbstract {
             'salary_range' => $candidate->salary_range,
             'created_by' => $candidate->created_by,
             'miles_radius' => $candidate->miles_radius,
+            'resume_file' => $candidate->resume_file,
         ];
     }
 }

@@ -39,9 +39,20 @@ $api->version('v1',['prefix' => 'api','namespace' => 'App\Http\Controllers\Api']
         
         $api->resource('agency','AgencyController');
         
+        $api->resource('companies','CompanyController');
+        
+        $api->resource('jobs','JobsController');
+        
+        $api->get('jobs/{id}/candidates','JobsController@getCandidates');
+        
         $api->post('candidate/{id}/uploadResume','CandidateController@uploadResume');
         $api->post('candidate/{id}/uploadProfile','CandidateController@uploadProfile');
         $api->post('candidate/{id}/skills','CandidateController@addSkill');
+        $api->get('candidate/{id}/skills','CandidateController@getSkills');
+        
+        $api->get('candidate/{id}/jobs','CandidateJobController@getJobs');
+        $api->post('candidate/{candidate_id}/jobs/{job_id}','CandidateJobController@assignJob');
+        $api->post('candidate/{candidate_id}/jobs/{job_id}/change-stage','CandidateJobController@changeStage');
         
         //$api->delete('candidate/{id}/skills/{id}','CandidateController@deleteSkill');
         

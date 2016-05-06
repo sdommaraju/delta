@@ -4,6 +4,7 @@ namespace App\Http\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Http\Models\CandidateSkills;
+use App\Http\Models\CandidateJobs;
 
 class Candidate extends Model
 {
@@ -14,5 +15,9 @@ class Candidate extends Model
     public function skills()
     {
         return $this->hasMany('App\Http\Models\CandidateSkills','candidate_id','id');
-    }   
+    }
+    public function jobs()
+    {
+        return $this->hasMany('App\Http\Models\CandidateJobs','candidate_id','id');
+    }
 }

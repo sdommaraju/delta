@@ -8,6 +8,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Api\BaseController;
 use App\Http\Models\Candidate as Candidate;
 use App\Http\Models\CandidateSkills;
+use App\Http\Models\User;
 use App\Http\Requests\CandidateRequest;
 use App\Http\Transformers\CandidateTransformer;
 use Dingo\Api\Auth\Auth;
@@ -22,10 +23,13 @@ use function Symfony\Component\Debug\header;
 
 class CandidateController extends BaseController
 {
-    public function __construct(){
+    public function __construct(Authorizer $authorizer){
     
         $this->middleware('oauth-user',["except"=>["index"]]);
+        $this->authorizer = $authorizer;
     }
+    
+
     /**
      * @api {get} /candidate Fetch All Candidates.
      * @apiVersion 1.0.0
@@ -67,7 +71,12 @@ class CandidateController extends BaseController
      */
     public function index()
     {
+        $loggedInUserId = $this->authorizer->getResourceOwnerId();
+        $userDetails = User::findorfail($loggedInUserId);
+        
+        //$candidates = Candidate::where('agency_id','=',$userDetails->agency_id)->get();
         $candidates = Candidate::all();
+        
         return $this->response->collection($candidates,new CandidateTransformer);
     }
 
@@ -161,9 +170,22 @@ class CandidateController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CandidateRequest $request, $id)
     {
-        //
+        $candidate = Candidate::findorfail($id);
+        $candidateData = $request->input();
+        
+        $candidateData->first_name = $candidateData['first_name'];
+        $candidateData->last_name = $candidateData['last_name'];
+        $candidateData->email = $candidateData['email'];
+        $candidateData->address1 = $candidateData['address1'];
+        $candidateData->city = $candidateData['city'];
+        $candidateData->state = $candidateData['state'];
+        $candidateData->zip = $candidateData['zip'];
+        $candidateData->phone_number = $candidateData['phone_number'];
+        
+        $candidate->save();
+        return $this->response->item($candidate,new CandidateTransformer);
     }
     /**
      * @api {post} /candidate/{id}/uploadResume Upload Candidate Resume File.
@@ -365,7 +387,51 @@ class CandidateController extends BaseController
         $candidates = Candidate::hydrate($candidates);
         return $this->response->collection($candidates,new CandidateTransformer);
     }
-
+    
+    /**
+     * @api {get} /candidate/{id}/skills Get Candidates Skills.
+     * @apiVersion 1.0.0
+     * @apiName GetcandidatesSkills
+     * @apiGroup Candidates
+     * @apiParam (AuthorizationHeader) {String} Accept Accept value. Allowed values: "application/vnd.delta.v1+json"
+     * @apiParam (AuthorizationHeader) {String} Authorization Token value (example "Bearer 4JosxlXfnoUyhGgBjAtyutO8FxIvRIADN0lp1TI2").
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *     "data": [
+     *       {
+     *         "id": 1,
+     *         "first_name": "srinu",
+     *         "last_name": "sri",
+     *         "email": "srinivasulumsc@gmail.com",
+     *           "agency_id": 1,
+     *           "city": "hyderabad",
+     *           "state": "TS",
+     *           "phone_number": "9949290090",
+     *           "experience": 0,
+     *           "salary": "",
+     *           "salary_range": 0,
+     *           "created_by": 0,
+     *           "miles_radius": 0
+     *       }
+     *     ]
+     *   }
+     *
+     * @apiError CandidatesNotFound No Candidates found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {
+     *       "error": "CandidatesNotFound"
+     *     }
+     */
+    function getSkills(Request $request,$id){
+        $candidate = Candidate::findorfail($id);
+        $skills = $candidate->skills;
+        
+        return $this->response->collection($skills,new CandidateSkillsTransformer);
+    }
     /**
      * Remove the specified resource from storage.
      *
