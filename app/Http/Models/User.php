@@ -6,6 +6,8 @@ use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use App\Http\Models\Projects;
+use App\Http\Models\Role;
+
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract {
 
 	use Authenticatable, CanResetPassword;
@@ -49,5 +51,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	{
 	    return $this->belongsTo('Agency');
 	}
-
+	public function role()
+	{
+	    return $this->belongsTo('App\Http\Models\Role');
+	}
 }

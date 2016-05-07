@@ -15,7 +15,7 @@ class UserTransformer extends TransformerAbstract {
             'phone_number' => $user->phone_number,
             'agency_id' => $user->agency_id,
             'group_id' => $user->group_id,
-            'role_id' => $user->role_id
+            'role' => $user->role
         ];
     }
 }

@@ -33,6 +33,9 @@ $api->version('v1',['prefix' => 'api','namespace' => 'App\Http\Controllers\Api']
        
         $api->get('user/profile', 'UserController@profile');
         
+        $api->get('user/roles', 'UserController@roles');
+        
+        
         $api->get('candidate/search','CandidateController@search');
         
         $api->resource('candidate','CandidateController');

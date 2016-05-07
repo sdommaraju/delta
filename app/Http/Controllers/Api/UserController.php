@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Models\User;
+use App\Http\Models\Role;
 use App\Http\Models\Projects;
 use App\Http\Requests\UsersRequest;
 use App\Http\Controllers\Api\BaseController;
 use App\Http\Transformers\UserTransformer;
 use App\Http\Transformers\UserProjectsTransformer;
 use App\Http\Transformers\ProjectsTransformer;
+use App\Http\Transformers\RolesTransformer;
 use Dingo\Api\Auth\Auth;
 use LucaDegasperi\OAuth2Server\Authorizer;
 
@@ -207,5 +209,32 @@ class UserController extends BaseController
         $user_id=$authorizer->getResourceOwnerId();
         $user = User::findorfail($user_id);
         return $this->response->item($user, new UserTransformer);
+    }
+    
+    /**
+     * @api {get} /user/roles Fetch All User Roles.
+     * @apiVersion 1.0.0
+     * @apiName GetRoles
+     * @apiGroup Users
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "firstname": "John",
+     *       "lastname": "Doe"
+     *     }
+     *
+     * @apiError UsersNotFound No Users found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {
+     *       "error": "UsersNotFound"
+     *     }
+     */
+    public function roles()
+    {
+        $roles = Role::where('id','>','2')->get();
+        return $this->response->collection($roles, new RolesTransformer);
     }
 }

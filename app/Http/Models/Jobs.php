@@ -23,4 +23,10 @@ class Jobs extends Model
         }
         return $candidatesData;
     }
+    public function company(){
+        return $this->hasOne('App\Http\Models\Companies','id','company_id');
+    }
+    public function agency(){
+        return $this->hasOne('App\Http\Models\Agency','id','agency_id');
+    }
 }
