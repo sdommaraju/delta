@@ -21,7 +21,7 @@ class JobsCandidatesTransformer extends TransformerAbstract {
             'openings_available' => $job->openings_available,
             'max_allowed_submissions' => $job->max_allowed_submissions,
             'created_at' => $job->created_at,
-            'candidates' => $job->candidates()
+            'candidates' => $job->candidates($job->agency_id)
         ];
     }
 }

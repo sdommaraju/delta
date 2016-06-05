@@ -35,6 +35,9 @@ $api->version('v1',['prefix' => 'api','namespace' => 'App\Http\Controllers\Api']
         
         $api->get('user/roles', 'UserController@roles');
         
+        $api->get('user/groups', 'UserController@groups');
+        
+        
         
         $api->get('candidate/search','CandidateController@search');
         

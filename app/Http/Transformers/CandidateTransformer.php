@@ -22,6 +22,8 @@ class CandidateTransformer extends TransformerAbstract {
             'created_by' => $candidate->created_by,
             'miles_radius' => $candidate->miles_radius,
             'resume_file' => $candidate->resume_file,
+            'created_at' => $candidate->created_at,
+            'updated_at' => $candidate->updated_at,
         ];
     }
 }

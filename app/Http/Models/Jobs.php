@@ -9,14 +9,14 @@ class Jobs extends Model
 {
     protected $table = 'jobs';
     
-    protected $fillable = ['title', 'description','agency_id','company_id','position_type','bill_rate','pay_rate','start_date','end_date','openings_available','max_allowed_submissions'];
+    protected $fillable = ['title', 'description','agency_id','company_id','position_type','bill_rate','pay_rate','start_date','end_date','openings_available','max_allowed_submissions','group_id'];
     
-    public function candidates(){
+    public function candidates($agency_id){
         $stages = ['screening','phone_interview','face_to_face','job_offered','job_accepted','job_rejected'];
         $candidatesData = [];
         foreach($stages as $stage){
             $query = " SELECT c.* FROM candidates c, job_candidates jc WHERE c.id=jc.candidate_id AND jc.job_id='".$this->id."' "
-                      ." AND jc.stage='".$stage."' ";
+                      ." AND jc.stage='".$stage."' and c.agency_id='".$agency_id."' ";
            
             $result =  DB::select($query);
             $candidatesData[$stage] = $result;

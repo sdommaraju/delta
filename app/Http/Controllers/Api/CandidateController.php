@@ -21,12 +21,14 @@ use App\Http\Transformers\CandidateSkillsTransformer;
 use Illuminate\Database\Eloquent\Collection;
 use function Symfony\Component\Debug\header;
 
+
 class CandidateController extends BaseController
 {
     public function __construct(Authorizer $authorizer){
     
         $this->middleware('oauth-user',["except"=>["index"]]);
         $this->authorizer = $authorizer;
+       
     }
     
 
@@ -74,8 +76,8 @@ class CandidateController extends BaseController
         $loggedInUserId = $this->authorizer->getResourceOwnerId();
         $userDetails = User::findorfail($loggedInUserId);
         
-        //$candidates = Candidate::where('agency_id','=',$userDetails->agency_id)->get();
-        $candidates = Candidate::all();
+        $candidates = Candidate::where('agency_id','=',$userDetails->agency_id)->get();
+        //$candidates = Candidate::all();
         
         return $this->response->collection($candidates,new CandidateTransformer);
     }
@@ -136,7 +138,12 @@ class CandidateController extends BaseController
      */
     public function store(CandidateRequest $request)
     {
+        $loggedInUserId = $this->authorizer->getResourceOwnerId();
+        $userDetails = User::findorfail($loggedInUserId);
+        
         $candidate = $request->input();
+        $candidate->agency_id = $userDetails->agency_id;
+        
         return $this->response->item(Candidate::create($candidate),new CandidateTransformer);
     }
 
@@ -344,7 +351,13 @@ class CandidateController extends BaseController
      * @apiGroup Candidates
      * @apiParam (AuthorizationHeader) {String} Accept Accept value. Allowed values: "application/vnd.delta.v1+json"
      * @apiParam (AuthorizationHeader) {String} Authorization Token value (example "Bearer 4JosxlXfnoUyhGgBjAtyutO8FxIvRIADN0lp1TI2").
-     * @apiParam {String} skills Skills Json String. ex :{"skills":[{"php":"2"},{"mysql":"1"}]} 
+     * 
+     * @apiParam {String} skills Skills Json String. ex :{"skills":[{"php":"2"},{"mysql":"1"}]}
+     * @apiParam {String} state State
+     * @apiParam {String} city City
+     * @apiParam {String} zip Zip Code
+     * @apiParam {String} pay_range_min Minimum Salary Range
+     * @apiParam {String} pay_range_max Maximum Salary Range 
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -377,11 +390,16 @@ class CandidateController extends BaseController
      *     }
      */
     function search(Request $request){
+        
         $search_data = Request::all();
         
-        $params = json_decode($search_data['skills']);
+        $loggedInUserId = $this->authorizer->getResourceOwnerId();
+        $userDetails = User::findorfail($loggedInUserId);
+        
+        $skillsParams = json_decode($search_data['skills']);
+      
         $candidateSkills = new CandidateSkills();
-        $candidates = $candidateSkills->searchBySkills($params);
+        $candidates = $candidateSkills->searchBySkills($skillsParams,$search_data,$userDetails->agency_id);
         $candidates = json_decode(json_encode($candidates), true);
         
         $candidates = Candidate::hydrate($candidates);

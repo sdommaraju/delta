@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Models\User;
 use App\Http\Models\Role;
+use App\Http\Models\Groups;
 use App\Http\Models\Projects;
 use App\Http\Requests\UsersRequest;
 use App\Http\Controllers\Api\BaseController;
@@ -12,16 +13,17 @@ use App\Http\Transformers\UserTransformer;
 use App\Http\Transformers\UserProjectsTransformer;
 use App\Http\Transformers\ProjectsTransformer;
 use App\Http\Transformers\RolesTransformer;
+use App\Http\Transformers\GroupsTransformer;
 use Dingo\Api\Auth\Auth;
 use LucaDegasperi\OAuth2Server\Authorizer;
 
 class UserController extends BaseController
 {
-   public function __construct(){
+   public function __construct(Authorizer $authorizer){
         
         //$this->middleware('oauth-client',["only"=>["index"]]);
         $this->middleware('oauth-user',["except"=>["index"]]);
-        
+        $this->authorizer = $authorizer;
     }
     /**
      * @api {get} /users Fetch All Users.
@@ -46,7 +48,10 @@ class UserController extends BaseController
      */
     public function index()
     {
-        $users = User::all();
+        $user_id=$this->authorizer->getResourceOwnerId();
+        $user = User::findorfail($user_id);
+
+        $users = User::where('agency_id','=',$user->agency_id)->get();
         return $this->response->collection($users, new UserTransformer);
     }
 
@@ -90,8 +95,21 @@ class UserController extends BaseController
      */
     public function store(UsersRequest $request)
     {
+        $user_id=$this->authorizer->getResourceOwnerId();
+        $userData = User::findorfail($user_id);
+        
         $user = $request->input();
         $user['password'] = bcrypt($user['password']);
+        
+        $user['agency_id'] = $userData->agency_id;
+        //Handle Group name and id
+        if($user['group_type']=='add'){
+            $group = Groups::create(array('name'=>$user['group'],'agency_id'=>$userData->agency_id));
+            $user['group_id'] = $group->id;
+        }
+        if($user['group_type']=='select'){
+            $user['group_id'] = $user['group'];
+        }
         return $this->response->item(User::create($user),new UserTransformer);
     }
 
@@ -236,5 +254,14 @@ class UserController extends BaseController
     {
         $roles = Role::where('id','>','2')->get();
         return $this->response->collection($roles, new RolesTransformer);
+    }
+    public function groups()
+    {
+        $user_id=$this->authorizer->getResourceOwnerId();
+        $user = User::findorfail($user_id);
+        
+        $groups = Groups::where('agency_id','=',$user->agency_id)->get();
+
+        return $this->response->collection($groups, new GroupsTransformer);
     }
 }

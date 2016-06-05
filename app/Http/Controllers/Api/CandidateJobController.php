@@ -183,7 +183,7 @@ class CandidateJobController extends BaseController
      *
      * @apiParam {Integer} candidate_id Candidate Id
      * @apiParam {Integer} job_id Job Id
-     * @apiParam {String} stage Job Stage to change
+     * @apiParam {String} stage Job Stage to change. Allowed Values {'screening','phone_interview','face_to_face','job_offered','job_accepted','job_rejected'}
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK

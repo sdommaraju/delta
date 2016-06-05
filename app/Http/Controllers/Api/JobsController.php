@@ -8,12 +8,19 @@ use App\Http\Requests;
 use App\Http\Controllers\Api\BaseController;
 use App\Http\Controllers\Controller;
 use App\Http\Models\Jobs;
+use App\Http\Models\User;
 use App\Http\Requests\JobsRequest;
 use App\Http\Transformers\JobsTransformer;
 use App\Http\Transformers\JobsCandidatesTransformer;
+use Dingo\Api\Auth\Auth;
+use LucaDegasperi\OAuth2Server\Authorizer;
 
 class JobsController extends BaseController
 {
+    public function __construct(Authorizer $authorizer){
+    
+        $this->authorizer = $authorizer;
+    }
     /**
      * @api {get} /jobs Fetch All Jobs.
      * @apiVersion 1.0.0
@@ -78,7 +85,16 @@ class JobsController extends BaseController
      */
     public function index()
     {
-        $jobs = Jobs::all();
+        $user_id=$this->authorizer->getResourceOwnerId();
+        $user = User::findorfail($user_id);
+        if($user->role_id==4){
+            $jobs = Jobs::where('agency_id','=',$user->agency_id)->get();
+        } else if($user->role_id==5){
+            $jobs = Jobs::where('group_id','=',$user->group_id)->get();
+        } else {
+            $jobs = Jobs::All();
+        }
+        
         return $this->response->collection($jobs, new JobsTransformer);
     }
     
@@ -137,8 +153,12 @@ class JobsController extends BaseController
      */
     public function store(JobsRequest $request)
     {
+        $user_id=$this->authorizer->getResourceOwnerId();
+        $user = User::findorfail($user_id);
+        
         $jobData = $request->input();
-         
+        $jobData['agency_id'] = $user->agency_id;
+        
         $job = Jobs::create($jobData);
     
         return $this->response->item($job,new JobsTransformer);
@@ -366,6 +386,9 @@ class JobsController extends BaseController
      */
     public function getCandidates($id)
     {
+        $user_id=$this->authorizer->getResourceOwnerId();
+        $user = User::findorfail($user_id);
+        
         $job = Jobs::findorfail($id);
         
         //$candidatesData = $job->candidates();

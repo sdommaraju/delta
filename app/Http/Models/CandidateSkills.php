@@ -16,7 +16,7 @@ class CandidateSkills extends Model
     {
         return $this->belongsTo('candidates','id');
     }
-    public function searchBySkills($skills){
+    public function searchBySkills($skills,$search_data,$agency_id){
         
         $query = "SELECT candidate_id FROM candidate_skills cnd WHERE  ";
         $first = false;
@@ -47,8 +47,22 @@ class CandidateSkills extends Model
             $resume_query.= " resume_content like '%".$key."%' ";
         }
         
-        $candidates_query = "SELECT * FROM candidates WHERE id IN (".$query.") OR (".$resume_query.") ";
-        
+        $candidates_query = "SELECT * FROM candidates WHERE ( id IN (".$query.") OR (".$resume_query.") ) AND agency_id='".$agency_id."' ";
+        if($search_data['state']!=""){
+            $candidates_query.=" AND state like '%".$search_data['state']."%'";
+        }
+        if($search_data['city']!=""){
+            $candidates_query.=" AND city like '%".$search_data['city']."%'";
+        }
+        if($search_data['zip']!=""){
+            $candidates_query.=" AND zip =".$search_data['zip'] ;
+        }
+        if($search_data['pay_range_min']!=""){
+            $candidates_query.=" AND salary_range >= ".$search_data['pay_range_min'] ;
+        }
+        if($search_data['pay_range_max']!=""){
+            $candidates_query.=" AND salary_range <=".$search_data['pay_range_max'] ;
+        }
         
         
         return DB::select($candidates_query);

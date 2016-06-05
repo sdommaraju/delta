@@ -11,9 +11,15 @@ use App\Http\Models\Companies;
 use App\Http\Models\User;
 use App\Http\Requests\CompanyRequest;
 use App\Http\Transformers\CompanyTransformer;
+use Dingo\Api\Auth\Auth;
+use LucaDegasperi\OAuth2Server\Authorizer;
 
 class CompanyController extends BaseController
 {
+    public function __construct(Authorizer $authorizer){
+    
+        $this->authorizer = $authorizer;
+    }
     /**
      * @api {get} /company Fetch All Companies.
      * @apiVersion 1.0.0
@@ -51,7 +57,10 @@ class CompanyController extends BaseController
      */
     public function index()
     {
-        $companies = Companies::all();
+        $user_id=$this->authorizer->getResourceOwnerId();
+        $user = User::findorfail($user_id);
+        
+        $companies = Companies::where('agency_id','=',$user->agency_id)->get();
         return $this->response->collection($companies, new CompanyTransformer);
     }
 
@@ -106,8 +115,13 @@ class CompanyController extends BaseController
      */
     public function store(CompanyRequest $request)
     {
+        $user_id=$this->authorizer->getResourceOwnerId();
+        $user = User::findorfail($user_id);
+        
         $companyData = $request->input();
        
+        $companyData['agency_id'] = $user->agency_id;
+        
         $company = Companies::create($companyData);
         
         return $this->response->item($company,new CompanyTransformer);

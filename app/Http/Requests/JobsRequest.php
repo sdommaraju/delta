@@ -30,7 +30,7 @@ class JobsRequest extends Request
                     return [
                         'title' => 'required',
                         'position_type' => 'required',
-                        'agency_id' => 'required',
+                        //'agency_id' => 'required',
                         'company_id' => 'required',
                         'start_date' => 'required'
                     ];

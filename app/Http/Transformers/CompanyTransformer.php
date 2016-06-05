@@ -12,6 +12,7 @@ class CompanyTransformer extends TransformerAbstract {
             'name' => $company->name,
             'city' => $company->city,
             'state' => $company->state,
+            'agency_id' => $company->agency_id,
             'contact_name' => $company->contact_name,
             'contact_email' => $company->contact_email,
             'created_at' => $company->created_at
