@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Dingo\Api\Http\InternalRequest;
 use Illuminate\Container\Container;
 use Dingo\Api\Contract\Routing\Adapter;
+use Illuminate\Routing\ControllerInspector;
 use Dingo\Api\Contract\Debug\ExceptionHandler;
 use Illuminate\Http\Response as IlluminateResponse;
 use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
@@ -401,8 +402,6 @@ class Router
 
         $action = $this->mergeLastGroupAttributes($action);
 
-        $action = $this->addControllerMiddlewareToRouteAction($action);
-
         $uri = $uri === '/' ? $uri : '/'.trim($uri, '/');
 
         if (! empty($action['prefix'])) {
@@ -414,20 +413,6 @@ class Router
         $action['uri'] = $uri;
 
         return $this->adapter->addRoute((array) $methods, $action['version'], $uri, $action);
-    }
-
-    /**
-     * Add the controller preparation middleware to the beginning of the routes middleware.
-     *
-     * @param array @action
-     *
-     * @return array
-     */
-    protected function addControllerMiddlewareToRouteAction(array $action)
-    {
-        array_unshift($action['middleware'], 'api.controllers');
-
-        return $action;
     }
 
     /**

@@ -39,9 +39,9 @@ class Factory
      *
      * @return \Dingo\Api\Http\Response
      */
-    public function created($location = null, $content = null)
+    public function created($location = null)
     {
-        $response = new Response($content);
+        $response = new Response(null);
         $response->setStatusCode(201);
 
         if (! is_null($location)) {

@@ -12,7 +12,9 @@ use App\Http\Models\User;
 use App\Http\Requests\AgencyRequest;
 use App\Http\Requests\AgencyUserRequest;
 use App\Http\Transformers\AgencyTransformer;
+use App\Http\Requests\AgencyAccountActivationRequest;
 use App\Http\Models\Role;
+use Mail;
 
 class AgencyController extends BaseController
 {
@@ -116,7 +118,8 @@ class AgencyController extends BaseController
         $userData = $request->input();
        
         //Create USer with Email and Password
-        $userData['password'] = bcrypt($userData['password']);
+        //$userData['password'] = bcrypt($userData['password']);
+        $userData['password'] = uniqid();
         $userData['role_id'] = 2;
         
         $user = User::create($userData);
@@ -127,6 +130,20 @@ class AgencyController extends BaseController
         $user->agency_id = $agency->id;
         $user->save();
         $agency->user_id = $user->id;
+        
+        $mail_data['first_name'] = $user->first_name;
+        $mail_data['last_name'] = $user->last_name;
+        $mail_data['agency_name'] = $agency->name;
+        
+        $account_activation_link = config('app.url').'/account/activation?token='.base64_encode($user->id.'-'.$user->email.'-'.$userData['password']);
+        
+        
+        $mail_data['activation_link'] = $account_activation_link;
+        
+        
+        Mail::send('agency.welcome', $mail_data, function($message) use ($user, $agency) {
+            $message->to($user->email)->subject('Delta :: '.$agency->name.' :: Account Activation');
+        });
         
         return $this->response->item($agency,new AgencyTransformer);
     }
@@ -295,5 +312,58 @@ class AgencyController extends BaseController
         $agency = Agency::findorfail($id);
         $agency->delete();
         return $this->response->item($agency,new AgencyTransformer);
+    }
+    public function activation(Request $request){
+        $tokenData = $request->input();
+        $userTokenString = $tokenData['token'];
+        if($userTokenString!=""){
+            $userToken = explode('-',base64_decode($userTokenString));
+            
+            $userId = trim($userToken[0]);
+            $email = trim($userToken[1]);
+            $uid = trim($userToken[2]);
+            
+            if($userId!="" && $email!="" && $uid!=""){
+                $userRecord = User::find($userId);
+                $userRecord->access_token = $userTokenString;
+                if($userRecord && $userRecord->email==$email && $userRecord->password==$uid){
+                    return view('agency.activation',$userRecord);
+                } else {
+                    return view('agency.activation',array('message'=>'Invalid Activation Link and Account already activated.'));
+                }
+            } else {
+                return view('agency.activation',array('message'=>'Invalid Activation Link and Account already activated.'));
+            }
+        } else {
+            return view('agency.activation',array('message'=>'Invalid Activation Link and Account already activated.'));
+        }
+    }
+    public function updatePassword(AgencyAccountActivationRequest $request){
+     
+        $formData = $request->input();
+
+        $password = $formData['password'];
+        $userTokenString = $formData['access_token'];
+        
+        if($userTokenString!=""){
+            $userToken = explode('-',base64_decode($userTokenString));
+            
+            $userId = trim($userToken[0]);
+            $email = trim($userToken[1]);
+            $uid = trim($userToken[2]);
+        
+            if($userId!="" && $email!="" && $uid!=""){
+                $userRecord = User::find($userId);
+                $userRecord->password = bcrypt($password);
+                $userRecord->save();
+
+                return view('agency.success',array('message'=>'Your Account Activated Successfully.'));
+            } else {
+                return view('agency.activation',array('message'=>'Invalid Activation Link and Account already activated.'));
+            }
+        } else {
+            return view('agency.activation',array('message'=>'Invalid Activation Link and Account already activated.'));
+        }
+        
     }
 }

@@ -37,6 +37,7 @@ return array(
     'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
     'Dingo\\Blueprint\\' => array($vendorDir . '/dingo/blueprint/src'),
     'Dingo\\Api\\' => array($vendorDir . '/dingo/api/src'),
+    'Collective\\Html\\' => array($vendorDir . '/laravelcollective/html/src'),
     'ClassPreloader\\' => array($vendorDir . '/classpreloader/classpreloader/src'),
     'Carbon\\' => array($vendorDir . '/nesbot/carbon/src/Carbon'),
     'Barryvdh\\Cors\\' => array($vendorDir . '/barryvdh/laravel-cors/src'),

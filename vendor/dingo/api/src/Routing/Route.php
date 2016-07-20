@@ -185,8 +185,6 @@ class Route
     protected function mergeControllerProperties()
     {
         if (isset($this->action['uses']) && is_string($this->action['uses']) && Str::contains($this->action['uses'], '@')) {
-            $this->action['controller'] = $this->action['uses'];
-
             $this->makeControllerInstance();
         }
 

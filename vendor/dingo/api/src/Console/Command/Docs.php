@@ -54,8 +54,7 @@ class Docs extends Command
      */
     protected $signature = 'api:docs {--name= : Name of the generated documentation}
                                      {--use-version= : Version of the documentation to be generated}
-                                     {--output-file= : Output the generated documentation to a file}
-                                     {--include-path= : Path where included documentation files are located}';
+                                     {--output-file= : Output the generated documentation to a file}';
 
     /**
      * The console command description.
@@ -93,7 +92,7 @@ class Docs extends Command
      */
     public function handle()
     {
-        $contents = $this->blueprint->generate($this->getControllers(), $this->getDocName(), $this->getVersion(), $this->getIncludePath());
+        $contents = $this->blueprint->generate($this->getControllers(), $this->getDocName(), $this->getVersion());
 
         if ($file = $this->option('output-file')) {
             $this->writer->write($contents, $file);
@@ -120,16 +119,6 @@ class Docs extends Command
         }
 
         return $name;
-    }
-
-    /**
-     * Get the include path for documentation files.
-     *
-     * @return string
-     */
-    protected function getIncludePath()
-    {
-        return rtrim($this->laravel['path.base'].'/'.$this->option('include-path'), '/');
     }
 
     /**

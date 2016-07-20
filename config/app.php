@@ -151,7 +151,7 @@ return [
 		'App\Providers\RouteServiceProvider',
 
 		'Barryvdh\Cors\ServiceProvider',
-
+	    'Collective\Html\HtmlServiceProvider',
 	],
 
 	/*
@@ -200,7 +200,8 @@ return [
 		'Validator' => 'Illuminate\Support\Facades\Validator',
 		'View'      => 'Illuminate\Support\Facades\View',
 	    'Authorizer' => 'LucaDegasperi\OAuth2Server\Facades\Authorizer',
-
+	    'Form'      => 'Collective\Html\FormFacade',
+	    'HTML'      => 'Collective\Html\HtmlFacade', // Optional
 	],
 
 ];

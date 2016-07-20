@@ -14,6 +14,8 @@
 Route::get('/', 'WelcomeController@index');
 
 Route::get('home', 'HomeController@index');
+Route::get('account/activation', 'Api\AgencyController@activation');
+Route::post('account/activation/update', ['as' => 'account.activation.update',  'uses' => 'Api\AgencyController@updatePassword']);
 
 Route::controllers([
 	'auth' => 'Auth\AuthController',
