@@ -9,7 +9,7 @@ class Jobs extends Model
 {
     protected $table = 'jobs';
     
-    protected $fillable = ['title', 'description','agency_id','company_id','position_type','bill_rate','pay_rate','start_date','end_date','openings_available','max_allowed_submissions','group_id'];
+    protected $fillable = ['title', 'description','agency_id','company_id','position_type','bill_rate','pay_rate','start_date','end_date','openings_available','max_allowed_submissions','group_id','client_name','contact_name','contact_email','contact_phone','contact_location'];
     
     public function candidates($agency_id){
         $stages = ['screening','phone_interview','face_to_face','job_offered','job_accepted','job_rejected'];

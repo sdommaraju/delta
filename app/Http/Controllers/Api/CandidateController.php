@@ -20,7 +20,7 @@ use App\Http\Requests\CandidateSkillsRequest;
 use App\Http\Transformers\CandidateSkillsTransformer;
 use Illuminate\Database\Eloquent\Collection;
 use function Symfony\Component\Debug\header;
-
+use Mail;
 
 class CandidateController extends BaseController
 {
@@ -142,9 +142,28 @@ class CandidateController extends BaseController
         $userDetails = User::findorfail($loggedInUserId);
         
         $candidate = $request->input();
-        $candidate->agency_id = $userDetails->agency_id;
+       
+        $candidate['agency_id'] = $userDetails->agency_id;
         
-        return $this->response->item(Candidate::create($candidate),new CandidateTransformer);
+        $candidateRecord = Candidate::create($candidate);
+        if($candidateRecord) {
+            //Send Email to Team Lead who created this candidate
+            
+            //Send Account Activation Email
+            $mail_data['team_lead_mail_id'] = $userDetails->email;
+            $mail_data['team_lead_first_name'] = $userDetails->first_name;
+            $mail_data['team_lead_last_name'] = $userDetails->last_name;
+            
+            $mail_data['candidate_id'] = $candidateRecord->id;
+            $mail_data['candidate_first_name'] = $candidateRecord->first_name;
+            $mail_data['candidate_last_name'] = $candidateRecord->last_name;
+            
+            Mail::send('emails.candidateCreated', $mail_data, function($message) use ($mail_data) {
+                $message->to($mail_data['team_lead_mail_id'])->subject('Delta :: Candidate :: '.$mail_data['candidate_first_name'].' '.$mail_data['candidate_last_name']);
+            });
+        }
+            
+        return $this->response->item($candidateRecord,new CandidateTransformer);
     }
 
     /**

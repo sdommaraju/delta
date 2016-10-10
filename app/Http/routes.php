@@ -14,12 +14,20 @@
 Route::get('/', 'WelcomeController@index');
 
 Route::get('home', 'HomeController@index');
+
+Route::get('admin', 'AdminController@index');
+Route::get('admin/login', 'AdminController@login');
+Route::get('admin/logout', 'AdminController@logout');
+Route::get('admin/import', 'AdminController@import');
+Route::post('admin/import', 'AdminController@importProcess');
+Route::post('admin/login', 'AdminController@loginProcess');
+
 Route::get('account/activation', 'Api\AgencyController@activation');
 Route::post('account/activation/update', ['as' => 'account.activation.update',  'uses' => 'Api\AgencyController@updatePassword']);
 
 Route::controllers([
 	'auth' => 'Auth\AuthController',
-	'password' => 'Auth\PasswordController',
+	'password' => 'Auth\PasswordController'
 ]);
 
 

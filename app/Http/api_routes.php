@@ -37,6 +37,8 @@ $api->version('v1',['prefix' => 'api','namespace' => 'App\Http\Controllers\Api']
         
         $api->get('user/groups', 'UserController@groups');
         
+        $api->get('user/validateEmail', 'UserController@validateEmail');
+        
         
         
         $api->get('candidate/search','CandidateController@search');
@@ -49,6 +51,11 @@ $api->version('v1',['prefix' => 'api','namespace' => 'App\Http\Controllers\Api']
         
         $api->resource('jobs','JobsController');
         
+        $api->resource('vendor/group','VendorGroupController');
+        $api->resource('vendor','VendorController');
+        
+        $api->post('vendor/sendemail/{id}','VendorController@sendemail');
+        
         $api->get('jobs/{id}/candidates','JobsController@getCandidates');
         
         $api->post('candidate/{id}/uploadResume','CandidateController@uploadResume');
@@ -59,6 +66,10 @@ $api->version('v1',['prefix' => 'api','namespace' => 'App\Http\Controllers\Api']
         $api->get('candidate/{id}/jobs','CandidateJobController@getJobs');
         $api->post('candidate/{candidate_id}/jobs/{job_id}','CandidateJobController@assignJob');
         $api->post('candidate/{candidate_id}/jobs/{job_id}/change-stage','CandidateJobController@changeStage');
+        
+        $api->get('candidate/{candidate_id}/jobs/{job_id}/stage-history','CandidateJobController@getJobChangeStageHistory');
+        $api->get('candidate/{candidate_id}/stage-history','CandidateJobController@getJobChangeStageHistory');
+        
         
         //$api->delete('candidate/{id}/skills/{id}','CandidateController@deleteSkill');
         

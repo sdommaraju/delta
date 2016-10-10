@@ -12,9 +12,18 @@ use App\Http\Models\Jobs;
 use App\Http\Models\CandidateJobs;
 use App\Http\Requests\CompanyRequest;
 use App\Http\Transformers\CandidateJobTransformer;
+use LucaDegasperi\OAuth2Server\Authorizer;
+use App\Http\Models\CandidateJobsHistory;
+use App\Http\Transformers\CandidateJobHistoryTransformer;
 
 class CandidateJobController extends BaseController
 {
+    public function __construct(Authorizer $authorizer){
+    
+        $this->middleware('oauth-user');
+        $this->authorizer = $authorizer;
+         
+    }
     /**
      * @api {get} /candidate/{id}/jobs Fetch All Jobs for given candidate.
      * @apiVersion 1.0.0
@@ -162,6 +171,7 @@ class CandidateJobController extends BaseController
      */
     public function assignJob($candidate_id, $job_id)
     {
+       $loggedInUserId = $this->authorizer->getResourceOwnerId();
        $candidate = Candidate::findorfail($candidate_id);
        $job = Jobs::findorfail($job_id);
        
@@ -170,6 +180,10 @@ class CandidateJobController extends BaseController
        $candidate_job_data['stage'] = 'screening';
        
        $candidateJob = CandidateJobs::create($candidate_job_data);
+       
+       // Save into History
+       $this->saveJobChangeStageHistory($candidate_id,$job_id,"", "screening",$loggedInUserId,"");
+       
        return $this->response->item($candidateJob, new CandidateJobTransformer);
     }
 
@@ -245,20 +259,63 @@ class CandidateJobController extends BaseController
      */
     public function changeStage(Request $request,$candidate_id, $job_id)
     {
+        $loggedInUserId = $this->authorizer->getResourceOwnerId();
+        
         $data = $request->input();
         
         $candidate = Candidate::findorfail($candidate_id);
         $job = Jobs::findorfail($job_id);
          
         $candidateJobData = CandidateJobs::where('candidate_id',$candidate_id)->where('job_id',$job_id)->get();
-        
+        $currentStage = $candidateJobData[0]->stage;
         $candidateJob = CandidateJobs::findorfail($candidateJobData[0]->id);
         $candidateJob['stage'] = $data['stage'];
-       
+        $comments = $data['comments'];
         $candidateJob->save();
         
+        // Save into History
+        $this->saveJobChangeStageHistory($candidate_id,$job_id,$currentStage, $data['stage'],$loggedInUserId,$comments);
         return $this->response->item($candidateJob, new CandidateJobTransformer);
     }
     
+    public function saveJobChangeStageHistory($candidate_id, $job_id,$currentStage, $stage,$stage_changed_id,$comments){
+       
+        
+       $candidateJobData = CandidateJobs::where('candidate_id',$candidate_id)->where('job_id',$job_id)->get();
+        
+       $data['job_candidate_id'] = $candidateJobData[0]->id;
+       $data['from_stage'] = $currentStage;
+       $data['to_stage'] = $stage;
+       $data['stage_changed_id'] = $stage_changed_id;
+       $data['comments'] = $comments;
+       
+       CandidateJobsHistory::create($data);
+    }
+    
+    public function getJobChangeStageHistory($candidate_id="",$job_id=""){
+     
+        if($candidate_id>0){
+            if($job_id>0){
+                $candidateJobData = CandidateJobs::where('candidate_id',$candidate_id)->where('job_id',$job_id)->get();
+                if(count($candidateJobData)>0){
+                    $history = CandidateJobsHistory::where('job_candidate_id','=',$candidateJobData[0]->id)->get();
+                
+                    return $this->response->collection($history, new CandidateJobHistoryTransformer);
+                } else {
+                    return json_encode(array('data'=>null));
+                }
+            } else {
+                $candidateJobData = CandidateJobs::where('candidate_id',$candidate_id)->get();
+                if(count($candidateJobData)>0){
+                $history = CandidateJobsHistory::where('job_candidate_id','=',$candidateJobData[0]->id)->get();
+                
+                return $this->response->collection($history, new CandidateJobHistoryTransformer);
+                } else {
+                    return json_encode(array('data'=>null));
+                }
+            }
+        }
+        
+    }
     
 }

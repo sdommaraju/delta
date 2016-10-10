@@ -17,23 +17,23 @@
 			}
 
 			.container {
-				text-align: center;
+				text-align: left;
 				display: table-cell;
 				vertical-align: middle;
 			}
 
 			.content {
-				text-align: center;
+				text-align: left;
 				display: inline-block;
 			}
 
 			.title {
-				font-size: 96px;
+				font-size: 14px;
 				margin-bottom: 40px;
 			}
 
 			.quote {
-				font-size: 24px;
+				font-size: 12px;
 			}
 		</style>
 	</head>

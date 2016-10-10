@@ -91,6 +91,8 @@ class JobsController extends BaseController
             $jobs = Jobs::where('agency_id','=',$user->agency_id)->get();
         } else if($user->role_id==5){
             $jobs = Jobs::where('group_id','=',$user->group_id)->get();
+        } else if($user->role_id==2){
+            $jobs = Jobs::where('agency_id','=',$user->agency_id)->get();
         } else {
             $jobs = Jobs::All();
         }

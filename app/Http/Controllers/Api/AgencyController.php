@@ -140,7 +140,7 @@ class AgencyController extends BaseController
         
         $mail_data['activation_link'] = $account_activation_link;
         
-        
+        //Send Account Activation Email
         Mail::send('agency.welcome', $mail_data, function($message) use ($user, $agency) {
             $message->to($user->email)->subject('Delta :: '.$agency->name.' :: Account Activation');
         });

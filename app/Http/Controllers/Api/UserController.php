@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Models\User;
 use App\Http\Models\Role;
+use App\Http\Models\Agency;
 use App\Http\Models\Groups;
 use App\Http\Models\Projects;
 use App\Http\Requests\UsersRequest;
@@ -16,6 +17,7 @@ use App\Http\Transformers\RolesTransformer;
 use App\Http\Transformers\GroupsTransformer;
 use Dingo\Api\Auth\Auth;
 use LucaDegasperi\OAuth2Server\Authorizer;
+use Mail;
 
 class UserController extends BaseController
 {
@@ -99,9 +101,16 @@ class UserController extends BaseController
         $userData = User::findorfail($user_id);
         
         $user = $request->input();
+        $password = $user['password'];
         $user['password'] = bcrypt($user['password']);
         
         $user['agency_id'] = $userData->agency_id;
+        
+        
+        
+        $agency = Agency::find($userData->agency_id);
+        $role = Role::find($user['role_id']);
+        
         //Handle Group name and id
         if($user['group_type']=='add'){
             $group = Groups::create(array('name'=>$user['group'],'agency_id'=>$userData->agency_id));
@@ -110,6 +119,19 @@ class UserController extends BaseController
         if($user['group_type']=='select'){
             $user['group_id'] = $user['group'];
         }
+        
+        // Sending Email
+        $mail_data['first_name'] = $user['first_name'];
+        $mail_data['last_name'] = $user['last_name'];
+        $mail_data['password'] = $password;
+        $mail_data['email'] = $user['email'];
+        $mail_data['agency_name'] = $agency->name;
+        $mail_data['role'] = $role->name;
+        
+        Mail::send('agency.users', $mail_data, function($message) use ($mail_data) {
+            $message->to($mail_data['email'])->subject('Delta :: '.$mail_data['agency_name'].' :: Assigned as "'.$mail_data['role'].'"');
+        });
+        
         return $this->response->item(User::create($user),new UserTransformer);
     }
 
@@ -263,5 +285,16 @@ class UserController extends BaseController
         $groups = Groups::where('agency_id','=',$user->agency_id)->get();
 
         return $this->response->collection($groups, new GroupsTransformer);
+    }
+    public function validateEmail(Request $request){
+        $data = $request->input();
+        
+        $user = User::where('email','=',$data['email'])->get();
+
+        if(count($user)>0)
+            return json_encode(array('status'=>false));
+        else
+            return json_encode(array('status'=>true));
+        
     }
 }

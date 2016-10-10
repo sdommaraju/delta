@@ -10,7 +10,7 @@ class Candidate extends Model
 {
     protected $table = 'candidates';
     
-    protected $fillable = ['agency_id', 'first_name', 'last_name','address1','city','state','zip','phone_number','email','description','resume_content','agency_id'];
+    protected $fillable = ['agency_id', 'first_name', 'last_name','address1','city','state','zip','phone_number','email','experience','miles_radius','salary','salary_range','description','resume_content','agency_id'];
     
     public function skills()
     {

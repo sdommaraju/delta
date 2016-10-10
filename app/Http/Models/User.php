@@ -7,10 +7,12 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use App\Http\Models\Projects;
 use App\Http\Models\Role;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use DB;
 
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract {
 
-	use Authenticatable, CanResetPassword;
+	use Authenticatable, CanResetPassword, SoftDeletes;
 
 	/**
 	 * The database table used by the model.
@@ -36,6 +38,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	protected $casts = [
 	    'is_admin' => 'boolean',
 	];
+	
+	protected $dates = ['deleted_at'];
 	
 	public function isAdmin()
 	{
